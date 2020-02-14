@@ -58,9 +58,6 @@ const char* getFragmentShaderSource();
 int compileAndLinkShaders();
 
 int createVertexArrayObject();
-int createVertexArrayObject();
-int createVertexArrayObject();
-int createVertexArrayObject();
 
 bool initContext();
 
@@ -419,26 +416,26 @@ int compileAndLinkShaders()
 	return shaderProgram;
 }
 
-int createVertexArrayObject(vec3 color)
+int createVertexArrayObject()
 {
 	// Cube model
 	
 	vec3 vertexArray[] = {  // position,                            color
-		vec3(-0.5f,-0.5f,-0.5f), color, //left
-		vec3(-0.5f,-0.5f, 0.5f), color,
-		vec3(-0.5f, 0.5f, 0.5f), color,
+		vec3(-0.5f,-0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f), //left
+		vec3(-0.5f,-0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
+		vec3(-0.5f, 0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
 
-		vec3(-0.5f,-0.5f,-0.5f), color,
-		vec3(-0.5f, 0.5f, 0.5f), color,
-		vec3(-0.5f, 0.5f,-0.5f), color,
+		vec3(-0.5f,-0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
+		vec3(-0.5f, 0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
+		vec3(-0.5f, 0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
 
-		vec3(0.5f, 0.5f,-0.5f), color, // far
-		vec3(-0.5f,-0.5f,-0.5f), color,
-		vec3(-0.5f, 0.5f,-0.5f), color,
+		vec3(0.5f, 0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f), // far
+		vec3(-0.5f,-0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
+		vec3(-0.5f, 0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
 
-		vec3(0.5f, 0.5f,-0.5f), color,
-		vec3(0.5f,-0.5f,-0.5f), color,
-		vec3(-0.5f,-0.5f,-0.5f), color,
+		vec3(0.5f, 0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
+		vec3(0.5f,-0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
+		vec3(-0.5f,-0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
 
 		vec3(0.5f,-0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f), // bottom
 		vec3(-0.5f,-0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
@@ -474,6 +471,7 @@ int createVertexArrayObject(vec3 color)
 	};
 	/*
 	// grid model
+
 
 		GLuint indexArray[] = {
 			0, 1, 2,
