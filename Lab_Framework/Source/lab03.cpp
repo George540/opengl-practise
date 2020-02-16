@@ -16,6 +16,7 @@
 #include <glm/glm.hpp>  // GLM is an optimized math library with syntax to similar to OpenGL Shading Language
 #include <glm/gtc/matrix_transform.hpp> // include this to create transformation matrices
 #include <glm/common.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 
 using namespace glm;
@@ -78,7 +79,7 @@ int main(int argc, char*argv[])
 
 
 	// Camera parameters for view transform
-	vec3 cameraPosition(0.6f, 1.0f, 10.0f);
+	vec3 cameraPosition(0.6f, 1.0f, 20.0f);
 	vec3 cameraLookAt(0.0f, 0.0f, -1.0f);
 	vec3 cameraUp(0.0f, 1.0f, 0.0f);
 
@@ -126,20 +127,24 @@ int main(int argc, char*argv[])
 	glEnable(GL_CULL_FACE);
 
 	// @TODO 1 - Enable Depth Test
-	// ...
+	glEnable(GL_DEPTH_TEST);
+	
 
 
 	// Container for projectiles to be implemented in tutorial
 	list<Projectile> projectileList;
 
-
-
+	// Wireframe activation
+	bool isWireframe = false;
 
 	// Entering Game Loop
 	while (!glfwWindowShouldClose(window))
 	{
+		// Add the GL_DEPTH_BUFFER_BIT to glClear – TODO 1
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		// Each frame, reset color of each pixel to glClearColor
-		glClear(GL_COLOR_BUFFER_BIT);
+		//glClear(GL_COLOR_BUFFER_BIT);
 
 		// Frame time calculation
 		float dt = glfwGetTime() - lastFrameTime;
@@ -159,54 +164,83 @@ int main(int argc, char*argv[])
 		// Draw grid
 		GLuint worldMatrixLocation = glGetUniformLocation(shaderProgram, "worldMatrix");
 		mat4 groundWorldMatrix;
+		mat4 cubeWorldMatrix;
 
-		glDrawArrays(GL_TRIANGLES, 0, 36); // 36 vertices, starting at index 0
-
-										   // Draw cube-bottom
-		mat4 cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 1.0f, 0.0f)) * scale(mat4(1.0f), vec3(2.0f, 2.0f, 2.0f));
+		// Gizmo
+		// X-axis
+		cubeWorldMatrix = translate(mat4(1.0f), vec3(2.5f, 0.0f, 0.0f)) * scale(mat4(1.0f), vec3(5.0f, 0.2f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 0.0, 0.0)));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		// Y-axis
+		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 2.5f, 0.0f)) * scale(mat4(1.0f), vec3(0.2f, 5.0f, 0.2f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 1.0, 0.0)));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		// Z-axis
+		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, 2.5f)) * scale(mat4(1.0f), vec3(0.2f, 0.2f, 5.0f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 1.0)));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+
+
+		// Draw cube-bottom
+		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 1.0f, -5.0f)) * scale(mat4(1.0f), vec3(2.0f, 2.0f, 2.0f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Draw cube-Middle
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 2.5f, 0.0f)) * scale(mat4(1.0f), vec3(1.2f, 1.2f, 1.2f));
+		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 2.5f, -5.0f)) * scale(mat4(1.0f), vec3(1.2f, 1.2f, 1.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Draw cube-Top
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 3.8f, 0.0f)) * scale(mat4(1.0f), vec3(1.5f, 1.5f, 1.5f));
+		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 3.8f, -5.0f)) * scale(mat4(1.0f), vec3(1.5f, 1.5f, 1.5f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// Draw arm-left
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(-1.2f, 2.2f, 0.0f)) * rotate(mat4(1.0f), radians(45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(mat4(1.0f), vec3(2.0f, 0.2f, 0.2f));
+		cubeWorldMatrix = translate(mat4(1.0f), vec3(-1.2f, 2.2f, -5.0f)) * rotate(mat4(1.0f), radians(45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(mat4(1.0f), vec3(2.0f, 0.2f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// Draw arm-right
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(1.2f, 2.2f, 0.0f)) * rotate(mat4(1.0f), radians(-45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(mat4(1.0f), vec3(2.0f, 0.2f, 0.2f));
+		cubeWorldMatrix = translate(mat4(1.0f), vec3(1.2f, 2.2f, -5.0f)) * rotate(mat4(1.0f), radians(-45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(mat4(1.0f), vec3(2.0f, 0.2f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// Hat1
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 4.5f, 0.0f)) * scale(mat4(1.0f), vec3(2.0f, 0.5f, 2.0f));
+		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 4.5f, -5.0f)) * scale(mat4(1.0f), vec3(2.0f, 0.5f, 2.0f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Hat2
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 5.0f, 0.0f)) * scale(mat4(1.0f), vec3(0.8f, 0.3f, 0.8f));
+		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 5.0f, -5.0f)) * scale(mat4(1.0f), vec3(0.8f, 0.3f, 0.8f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
 
 		for (int i = 0; i<100; ++i)
 		{
-			groundWorldMatrix = translate(mat4(1.0f), vec3(-50.0f + i * 1.0f, 0.0f, 0.0f)) * scale(mat4(1.0f), vec3(0.02f, 0.02f, 100.0f));
+			groundWorldMatrix = translate(mat4(1.0f), vec3(-25.0f + i * 0.5f, 0.0f, 0.0f)) * scale(mat4(1.0f), vec3(0.01f, 0.01f, 50.0f));
 			glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &groundWorldMatrix[0][0]);
+			glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 0.0)));
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 
-			groundWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, -50.0f + i * 1.0f)) * rotate(mat4(1.0f), radians(90.0f), vec3(0.0f, 1.0f, 0.0f)) * scale(mat4(1.0f), vec3(0.02f, 0.02f, 100.0f));
+			groundWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, -25.0f + i * 0.5f)) * rotate(mat4(1.0f), radians(90.0f), vec3(0.0f, 1.0f, 0.0f)) * scale(mat4(1.0f), vec3(0.01f, 0.01f, 50.0f));
 			glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &groundWorldMatrix[0][0]);
+			glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 0.0)));
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		}
+
 
 		// @TODO 3 - Update and draw projectiles
 		// ...
@@ -299,6 +333,20 @@ int main(int argc, char*argv[])
 		{
 			cameraPosition.y += currentCameraSpeed * dt;
 		}
+
+		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) // SPACE INPUT
+		{
+			if (isWireframe == false) {
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				isWireframe = true;
+			}
+			else if (isWireframe == true) {
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				isWireframe = false;
+			}
+		}
+
+
 
 		// TODO 6
 		// Set the view matrix for first and third person cameras
@@ -483,6 +531,8 @@ int createVertexArrayObject()
 	*/
 
 
+
+
 	// Create a vertex array
 	GLuint vertexArrayObject;
 	glGenVertexArrays(1, &vertexArrayObject);
@@ -541,7 +591,7 @@ bool initContext() {     // Initialize GLFW and OpenGL version
 #endif
 
 	// Create Window and rendering context using GLFW, resolution is 800x600
-	window = glfwCreateWindow(800, 600, "Comp371 - Lab 03", NULL, NULL);
+	window = glfwCreateWindow(1024, 768, "Comp371 - Lab 03", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cerr << "Failed to create GLFW window" << std::endl;
