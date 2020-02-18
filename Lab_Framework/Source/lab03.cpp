@@ -23,34 +23,6 @@ using namespace glm;
 using namespace std;
 
 
-class Projectile
-{
-public:
-	Projectile(vec3 position, vec3 velocity, int shaderProgram) : mPosition(position), mVelocity(velocity)
-	{
-		mWorldMatrixLocation = glGetUniformLocation(shaderProgram, "worldMatrix");
-
-	}
-
-	void Update(float dt)
-	{
-		mPosition += mVelocity * dt;
-	}
-
-	void Draw() {
-		// this is a bit of a shortcut, since we have a single vbo, it is already bound
-		// let's just set the world matrix in the vertex shader
-
-		mat4 worldMatrix = translate(mat4(1.0f), mPosition) * rotate(mat4(1.0f), radians(180.0f), vec3(0.0f, 1.0f, 0.0f)) * scale(mat4(1.0f), vec3(0.2f, 0.2f, 0.2f));
-		glUniformMatrix4fv(mWorldMatrixLocation, 1, GL_FALSE, &worldMatrix[0][0]);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-	}
-
-private:
-	GLuint mWorldMatrixLocation;
-	vec3 mPosition;
-	vec3 mVelocity;
-};
 
 const char* getVertexShaderSource();
 
@@ -85,7 +57,7 @@ int main(int argc, char*argv[])
 
 	// Other camera parameters
 	float cameraSpeed = 1.0f;
-	float cameraFastSpeed = 2 * cameraSpeed;
+	float cameraFastSpeed = 3 * cameraSpeed;
 	float cameraHorizontalAngle = 90.0f;
 	float cameraVerticalAngle = 0.0f;
 	bool  cameraFirstPerson = true; // press 1 or 2 to toggle this variable
@@ -128,14 +100,6 @@ int main(int argc, char*argv[])
 
 	// @TODO 1 - Enable Depth Test
 	glEnable(GL_DEPTH_TEST);
-	
-
-
-	// Container for projectiles to be implemented in tutorial
-	list<Projectile> projectileList;
-
-	// Wireframe activation
-	bool isWireframe = false;
 
 	// Entering Game Loop
 	while (!glfwWindowShouldClose(window))
@@ -168,20 +132,20 @@ int main(int argc, char*argv[])
 
 		// Gizmo
 		// X-axis
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(2.5f, 0.0f, 0.0f)) * scale(mat4(1.0f), vec3(5.0f, 0.2f, 0.2f));
+		cubeWorldMatrix = translate(mat4(1.0f), vec3(2.5f, 0.0f, 0.0f)) * scale(mat4(1.0f), vec3(5.0f, 0.1f, 0.1f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 0.0, 0.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_QUADS, 0, 36);
 		// Y-axis
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 2.5f, 0.0f)) * scale(mat4(1.0f), vec3(0.2f, 5.0f, 0.2f));
+		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 2.5f, 0.0f)) * scale(mat4(1.0f), vec3(0.1f, 5.0f, 0.1f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 1.0, 0.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_QUADS, 0, 36);
 		// Z-axis
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, 2.5f)) * scale(mat4(1.0f), vec3(0.2f, 0.2f, 5.0f));
+		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, 2.5f)) * scale(mat4(1.0f), vec3(0.1f, 0.1f, 5.0f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 1.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_QUADS, 0, 36);
 
 
 
@@ -190,54 +154,54 @@ int main(int argc, char*argv[])
 		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 1.0f, -5.0f)) * scale(mat4(1.0f), vec3(2.0f, 2.0f, 2.0f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_QUADS, 0, 36);
 		// Draw cube-Middle
 		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 2.5f, -5.0f)) * scale(mat4(1.0f), vec3(1.2f, 1.2f, 1.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_QUADS, 0, 36);
 		// Draw cube-Top
 		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 3.8f, -5.0f)) * scale(mat4(1.0f), vec3(1.5f, 1.5f, 1.5f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_QUADS, 0, 36);
 
 		// Draw arm-left
 		cubeWorldMatrix = translate(mat4(1.0f), vec3(-1.2f, 2.2f, -5.0f)) * rotate(mat4(1.0f), radians(45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(mat4(1.0f), vec3(2.0f, 0.2f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_QUADS, 0, 36);
 
 		// Draw arm-right
 		cubeWorldMatrix = translate(mat4(1.0f), vec3(1.2f, 2.2f, -5.0f)) * rotate(mat4(1.0f), radians(-45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(mat4(1.0f), vec3(2.0f, 0.2f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_QUADS, 0, 36);
 
 		// Hat1
 		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 4.5f, -5.0f)) * scale(mat4(1.0f), vec3(2.0f, 0.5f, 2.0f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_QUADS, 0, 36);
 		// Hat2
 		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 5.0f, -5.0f)) * scale(mat4(1.0f), vec3(0.8f, 0.3f, 0.8f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_QUADS, 0, 36);
 
 
 
-		for (int i = 0; i<100; ++i)
+		for (int i = 0; i<=100; ++i)
 		{
 			groundWorldMatrix = translate(mat4(1.0f), vec3(-25.0f + i * 0.5f, 0.0f, 0.0f)) * scale(mat4(1.0f), vec3(0.01f, 0.01f, 50.0f));
 			glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &groundWorldMatrix[0][0]);
 			glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 0.0)));
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			glDrawArrays(GL_QUADS, 0, 36);
 
 			groundWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, -25.0f + i * 0.5f)) * rotate(mat4(1.0f), radians(90.0f), vec3(0.0f, 1.0f, 0.0f)) * scale(mat4(1.0f), vec3(0.01f, 0.01f, 50.0f));
 			glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &groundWorldMatrix[0][0]);
 			glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 0.0)));
-			glDrawArrays(GL_TRIANGLES, 0, 36);
+			glDrawArrays(GL_QUADS, 0, 36);
 
 		}
 
@@ -276,8 +240,6 @@ int main(int argc, char*argv[])
 		//         - Update camera horizontal and vertical angle
 
 
-		// Please understand the code when you un-comment it!
-		/*
 		double mousePosX, mousePosY;
 		glfwGetCursorPos(window, &mousePosX, &mousePosY);
 
@@ -288,12 +250,12 @@ int main(int argc, char*argv[])
 		lastMousePosY = mousePosY;
 
 		// Convert to spherical coordinates
-		const float cameraAngularSpeed = 60.0f;
+		const float cameraAngularSpeed = 30.0f;
 		cameraHorizontalAngle -= dx * cameraAngularSpeed * dt;
 		cameraVerticalAngle   -= dy * cameraAngularSpeed * dt;
 
 		// Clamp vertical angle to [-85, 85] degrees
-		cameraVerticalAngle = std::max(-85.0f, std::min(85.0f, cameraVerticalAngle));
+		cameraVerticalAngle = max(-85.0f, min(85.0f, cameraVerticalAngle));
 		if (cameraHorizontalAngle > 360)
 		{
 		cameraHorizontalAngle -= 360;
@@ -310,41 +272,48 @@ int main(int argc, char*argv[])
 		vec3 cameraSideVector = glm::cross(cameraLookAt, vec3(0.0f, 1.0f, 0.0f));
 
 		glm::normalize(cameraSideVector);
-		*/
+		//*/
 
 		// @TODO 5 = use camera lookat and side vectors to update positions with ASDW
 		// adjust code below
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) // move camera to the left
 		{
-			cameraPosition.x -= currentCameraSpeed * dt;
+			cameraPosition -= cameraSideVector * currentCameraSpeed * dt;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) // move camera to the right
 		{
-			cameraPosition.x += currentCameraSpeed * dt;
+			cameraPosition += cameraSideVector * currentCameraSpeed * dt;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) // move camera up
 		{
-			cameraPosition.y -= currentCameraSpeed * dt;
+			cameraPosition -= cameraLookAt * currentCameraSpeed * dt;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) // move camera down
 		{
-			cameraPosition.y += currentCameraSpeed * dt;
+			cameraPosition += cameraLookAt * currentCameraSpeed * dt;
 		}
 
-		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) // SPACE INPUT
+		if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) // SPACE INPUT
 		{
-			if (isWireframe == false) {
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-				isWireframe = true;
-			}
-			else if (isWireframe == true) {
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-				isWireframe = false;
-			}
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}
+		if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) // SPACE INPUT
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+		}
+		if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) // SPACE INPUT
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_TRIANGLES);
+		}
+		if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) // SPACE INPUT
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+
+
 
 
 
@@ -517,18 +486,12 @@ int createVertexArrayObject()
 		vec3(-0.5f, 0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
 		vec3(-0.5f, 0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
 	};
-	/*
 	// grid model
-
-
-		GLuint indexArray[] = {
-			0, 1, 2,
-			0, 2, 3
-		}
-
-
+	GLuint indexArray[] = {
+		0, 1, 2,
+		0, 2, 3
 	};
-	*/
+
 
 
 
@@ -590,8 +553,8 @@ bool initContext() {     // Initialize GLFW and OpenGL version
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 #endif
 
-	// Create Window and rendering context using GLFW, resolution is 800x600
-	window = glfwCreateWindow(1024, 768, "Comp371 - Lab 03", NULL, NULL);
+	// Create Window and rendering context using GLFW, resolution is 1024, 768
+	window = glfwCreateWindow(1024, 768, "Comp371 - Assignment 1", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cerr << "Failed to create GLFW window" << std::endl;
@@ -602,6 +565,7 @@ bool initContext() {     // Initialize GLFW and OpenGL version
 
 	// @TODO 3 - Disable mouse cursor
 	// ...
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// Initialize GLEW
 	glewExperimental = true; // Needed for core profile
