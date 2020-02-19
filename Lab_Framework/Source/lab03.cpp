@@ -18,6 +18,8 @@
 #include <glm/common.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <ctime> // for random number
+
 
 using namespace glm;
 using namespace std;
@@ -62,9 +64,6 @@ int main(int argc, char*argv[])
 	float cameraVerticalAngle = 0.0f;
 	bool  cameraFirstPerson = true; // press 1 or 2 to toggle this variable
 
-									// Spinning cube at camera position
-	float spinningCubeAngle = 0.0f;
-
 	// Set projection matrix for shader, this won't change
 	mat4 projectionMatrix = glm::perspective(70.0f,            // field of view in degrees
 		800.0f / 600.0f,  // aspect ratio
@@ -101,6 +100,18 @@ int main(int argc, char*argv[])
 	// @TODO 1 - Enable Depth Test
 	glEnable(GL_DEPTH_TEST);
 
+	srand(time(NULL));
+	GLfloat random1 = 0.0f;
+	GLfloat random2 = 0.0f;
+
+	GLuint worldMatrixLocation = glGetUniformLocation(shaderProgram, "worldMatrix");
+	mat4 olafWorldMatrix;
+	mat4 gizmoWorldMatrix;
+	mat4 gridWorldMatrix;
+	mat4 model = mat4(1.0f);
+	vec3 olafPosition(0.0f, 0.0f, 0.0f);
+
+	float spinningAngle = 0.0f;
 	// Entering Game Loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -125,84 +136,86 @@ int main(int argc, char*argv[])
 		glBindVertexArray(vao);
 		//glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-		// Draw grid
-		GLuint worldMatrixLocation = glGetUniformLocation(shaderProgram, "worldMatrix");
-		mat4 groundWorldMatrix;
-		mat4 cubeWorldMatrix;
+		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+			random1 = (rand() % 50) - 25;
+			random2 = (rand() % 50) - 25;
+		}
 
 		// Gizmo
 		// X-axis
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(2.5f, 0.0f, 0.0f)) * scale(mat4(1.0f), vec3(5.0f, 0.1f, 0.1f));
-		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		gizmoWorldMatrix = translate(model, vec3(2.5f, 0.0f, 0.0f)) * scale(model, vec3(5.0f, 0.1f, 0.1f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &gizmoWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 0.0, 0.0)));
-		glDrawArrays(GL_QUADS, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Y-axis
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 2.5f, 0.0f)) * scale(mat4(1.0f), vec3(0.1f, 5.0f, 0.1f));
-		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		gizmoWorldMatrix = translate(model, vec3(0.0f, 2.5f, 0.0f)) * scale(model, vec3(0.1f, 5.0f, 0.1f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &gizmoWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 1.0, 0.0)));
-		glDrawArrays(GL_QUADS, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Z-axis
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, 2.5f)) * scale(mat4(1.0f), vec3(0.1f, 0.1f, 5.0f));
-		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		gizmoWorldMatrix = translate(model, vec3(0.0f, 0.0f, 2.5f)) * scale(model, vec3(0.1f, 0.1f, 5.0f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &gizmoWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 1.0)));
-		glDrawArrays(GL_QUADS, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-
-
-
+		spinningAngle += 180.0f *dt;
 		// Draw cube-bottom
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 1.0f, -5.0f)) * scale(mat4(1.0f), vec3(2.0f, 2.0f, 2.0f));
-		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		olafWorldMatrix = translate(model, olafPosition + vec3(random1, 1.0f, random2-5.0f)) * scale(model, vec3(2.0f, 2.0f, 2.0f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
-		glDrawArrays(GL_QUADS, 0, 36);
+		glDrawArrays(GL_TRIANGLES , 0, 36);
 		// Draw cube-Middle
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 2.5f, -5.0f)) * scale(mat4(1.0f), vec3(1.2f, 1.2f, 1.2f));
-		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		olafWorldMatrix = translate(model, olafPosition + vec3(random1, 2.5f, random2 -5.0f)) * scale(model, vec3(1.2f, 1.2f, 1.2f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
-		glDrawArrays(GL_QUADS, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Draw cube-Top
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 3.8f, -5.0f)) * scale(mat4(1.0f), vec3(1.5f, 1.5f, 1.5f));
-		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		olafWorldMatrix = translate(model, olafPosition + vec3(random1, 3.8f, random2 -5.0f)) * scale(model, vec3(1.5f, 1.5f, 1.5f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
-		glDrawArrays(GL_QUADS, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// Draw arm-left
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(-1.2f, 2.2f, -5.0f)) * rotate(mat4(1.0f), radians(45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(mat4(1.0f), vec3(2.0f, 0.2f, 0.2f));
-		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		olafWorldMatrix = translate(model, olafPosition + vec3(random1-1.2f, 2.2f, random2-5.0f)) * rotate(model, radians(45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(2.0f, 0.2f, 0.2f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		glDrawArrays(GL_QUADS, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// Draw arm-right
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(1.2f, 2.2f, -5.0f)) * rotate(mat4(1.0f), radians(-45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(mat4(1.0f), vec3(2.0f, 0.2f, 0.2f));
-		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		olafWorldMatrix = translate(model, olafPosition + vec3(random1+1.2f, 2.2f, random2-5.0f)) * rotate(model, radians(-45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(2.0f, 0.2f, 0.2f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		glDrawArrays(GL_QUADS, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// Hat1
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 4.5f, -5.0f)) * scale(mat4(1.0f), vec3(2.0f, 0.5f, 2.0f));
-		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		olafWorldMatrix = translate(model, olafPosition + vec3(random1, 4.5f, random2-5.0f)) * scale(model, vec3(2.0f, 0.5f, 2.0f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		glDrawArrays(GL_QUADS, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Hat2
-		cubeWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 5.0f, -5.0f)) * scale(mat4(1.0f), vec3(0.8f, 0.3f, 0.8f));
-		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &cubeWorldMatrix[0][0]);
+		olafWorldMatrix = translate(model, olafPosition + vec3(random1, 5.0f, random2-5.0f)) * scale(model, vec3(0.8f, 0.5f, 0.8f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		glDrawArrays(GL_QUADS, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
 
+
+		//if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+			//olafWorldMatrix *= rotate(model, radians(45.0f), vec3(0.0f, 1.0f, 0.0f));
+
+		//Draw grid
 		for (int i = 0; i<=100; ++i)
 		{
-			groundWorldMatrix = translate(mat4(1.0f), vec3(-25.0f + i * 0.5f, 0.0f, 0.0f)) * scale(mat4(1.0f), vec3(0.01f, 0.01f, 50.0f));
-			glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &groundWorldMatrix[0][0]);
+			gridWorldMatrix = translate(model, vec3(-50.0f + i, 0.0f, 0.0f)) * scale(model, vec3(0.01f, 0.01f, 100.0f));
+			glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &gridWorldMatrix[0][0]);
 			glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 0.0)));
-			glDrawArrays(GL_QUADS, 0, 36);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
 
-			groundWorldMatrix = translate(mat4(1.0f), vec3(0.0f, 0.0f, -25.0f + i * 0.5f)) * rotate(mat4(1.0f), radians(90.0f), vec3(0.0f, 1.0f, 0.0f)) * scale(mat4(1.0f), vec3(0.01f, 0.01f, 50.0f));
-			glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &groundWorldMatrix[0][0]);
+			gridWorldMatrix = translate(model, vec3(0.0f, 0.0f, -50.0f + i)) * rotate(model, radians(90.0f), vec3(0.0f, 1.0f, 0.0f)) * scale(model, vec3(0.01f, 0.01f, 100.0f));
+			glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &gridWorldMatrix[0][0]);
 			glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 0.0)));
-			glDrawArrays(GL_QUADS, 0, 36);
-
+			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
 
@@ -219,19 +232,8 @@ int main(int argc, char*argv[])
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
 
-		if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS) // move camera down
-		{
-			cameraFirstPerson = true;
-		}
 
-		if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS) // move camera down
-		{
-			cameraFirstPerson = false;
-		}
-
-
-		// This was solution for Lab02 - Moving camera exercise
-		// We'll change this to be a first or third person camera
+		// Fast Camera Movement
 		bool fastCam = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS;
 		float currentCameraSpeed = (fastCam) ? cameraFastSpeed : cameraSpeed;
 
@@ -295,6 +297,23 @@ int main(int argc, char*argv[])
 		{
 			cameraPosition += cameraLookAt * currentCameraSpeed * dt;
 		}
+
+
+		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+			olafPosition.x += 5 * dt;
+		}
+		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+			olafPosition.x -= 5 * dt;
+		}
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+			olafPosition.z += 5 * dt;
+		}
+		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+			olafPosition.z -= 5 * dt;
+		}
+
+
+
 
 		if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) // SPACE INPUT
 		{
