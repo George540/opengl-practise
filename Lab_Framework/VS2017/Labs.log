@@ -1,9 +1,9 @@
 ﻿  lab03.cpp
 c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(91): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(103): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(125): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(140): warning C4244: '=': conversion from 'int' to 'GLfloat', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(141): warning C4244: '=': conversion from 'int' to 'GLfloat', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(256): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(257): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(132): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(147): warning C4244: '=': conversion from 'int' to 'GLfloat', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(148): warning C4244: '=': conversion from 'int' to 'GLfloat', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(271): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(272): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
   Labs.vcxproj -> C:\Users\G\Documents\GitHub\opengl-practise\Lab_Framework\VS2017\/../Bin/Labs-Debug.exe

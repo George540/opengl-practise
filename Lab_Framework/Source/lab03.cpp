@@ -53,7 +53,7 @@ int main(int argc, char*argv[])
 
 
 	// Camera parameters for view transform
-	vec3 cameraPosition(0.6f, 1.0f, 20.0f);
+	vec3 cameraPosition(0.6f, 3.0f, 20.0f);
 	vec3 cameraLookAt(0.0f, 0.0f, -1.0f);
 	vec3 cameraUp(0.0f, 1.0f, 0.0f);
 
@@ -115,6 +115,9 @@ int main(int argc, char*argv[])
 	mat4 orientationMatrix = mat4(1.0f);
 	vec2 currentOrientation(0.0f, 0.0f);
 
+	mat4 groupMatrix = mat4(1.0f);
+	vec3 currentRotation(0.0f, 0.0f, 0.0f);
+
 	float spinningAngle = 0.0f;
 	// Entering Game Loop
 	while (!glfwWindowShouldClose(window))
@@ -146,8 +149,10 @@ int main(int argc, char*argv[])
 		}
 
 
-		orientationMatrix = rotate(rotate(mat4(1.0f), currentOrientation.x, vec3(1.0f, 0.0f, 0.0f)), currentOrientation.y, vec3(0.0f, 1.0f, 0.0f)) * scale;
+		orientationMatrix = rotate(rotate(mat4(1.0f), currentOrientation.x, vec3(1.0f, 0.0f, 0.0f)), currentOrientation.y, vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(orientationMatrixLocation, 1, GL_FALSE, &orientationMatrix[0][0]);
+
+		groupMatrix = translate(mat4(1.0f), olafPosition);
 
 		// Gizmo
 		// X-axis
@@ -168,40 +173,42 @@ int main(int argc, char*argv[])
 
 		spinningAngle += 180.0f *dt;
 		// Draw cube-bottom
-		olafWorldMatrix = translate(model, olafPosition) * translate(model, vec3(random1, 1.0f, random2 - 5.0f)) * scale(model, vec3(2.0f, 2.0f, 2.0f));
+		olafWorldMatrix = groupMatrix * translate(model, vec3(random1, 1.0f, random2 - 5.0f)) * scale(model, vec3(2.0f, 2.0f, 2.0f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Draw cube-Middle
-		olafWorldMatrix = translate(model, olafPosition) * translate(model, vec3(random1, 2.5f, random2 - 5.0f)) * scale(model, vec3(1.2f, 1.2f, 1.2f));
+		olafWorldMatrix = groupMatrix * translate(model, vec3(random1, 2.5f, random2 - 5.0f)) * scale(model, vec3(1.2f, 1.2f, 1.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Draw cube-Top
-		olafWorldMatrix = translate(model, olafPosition) * translate(model, vec3(random1, 3.8f, random2 - 5.0f)) * scale(model, vec3(1.5f, 1.5f, 1.5f));
+		olafWorldMatrix = groupMatrix * translate(model, vec3(random1, 3.8f, random2 - 5.0f)) * scale(model, vec3(1.5f, 1.5f, 1.5f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+
+		//rotate(mat4(1.0f), currentRotation.y, vec3(0.0f, 1.0f, 0.0f))
 		// Draw arm-left
-		olafWorldMatrix = translate(model, olafPosition) * translate(model, vec3(random1 - 1.2f, 2.2f, random2 - 5.0f)) * rotate(model, radians(45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(2.0f, 0.2f, 0.2f));
+		olafWorldMatrix = groupMatrix * translate(model, vec3(random1 - 1.2f, 2.2f, random2 - 5.0f)) * rotate(model, radians(45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(2.0f, 0.2f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// Draw arm-right
-		olafWorldMatrix = translate(model, olafPosition) * translate(model, vec3(random1 + 1.2f, 2.2f, random2 - 5.0f)) * rotate(model, radians(-45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(2.0f, 0.2f, 0.2f));
+		olafWorldMatrix = groupMatrix * translate(model, vec3(random1 + 1.2f, 2.2f, random2 - 5.0f)) * rotate(model, radians(-45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(2.0f, 0.2f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// Hat1
-		olafWorldMatrix = translate(model, olafPosition) * translate(model, vec3(random1, 4.5f, random2 - 5.0f)) * scale(model, vec3(2.0f, 0.5f, 2.0f));
+		olafWorldMatrix = groupMatrix * translate(model, vec3(random1, 4.5f, random2 - 5.0f)) * scale(model, vec3(2.0f, 0.5f, 2.0f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Hat2
-		olafWorldMatrix = translate(model, olafPosition) * translate(model, vec3(random1, 5.0f, random2 - 5.0f)) * scale(model, vec3(0.8f, 0.5f, 0.8f));
+		olafWorldMatrix = groupMatrix * translate(model, vec3(random1, 5.0f, random2 - 5.0f)) * scale(model, vec3(0.8f, 0.5f, 0.8f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -288,17 +295,19 @@ int main(int argc, char*argv[])
 		// adjust code below
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) // move camera to the left
 		{
-			cameraPosition -= cameraSideVector * currentCameraSpeed * dt;
+			//cameraPosition -= cameraSideVector * currentCameraSpeed * dt;
+			//currentRotation.y += radians(2.0f);
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) // move camera to the right
 		{
-			cameraPosition += cameraSideVector * currentCameraSpeed * dt;
+			//cameraPosition += cameraSideVector * currentCameraSpeed * dt;
+			//currentRotation.y -= radians(2.0f);
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) // move camera up
 		{
-			cameraPosition -= cameraLookAt * currentCameraSpeed * dt;
+			//cameraPosition -= cameraLookAt * currentCameraSpeed * dt;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) // move camera down
@@ -307,19 +316,21 @@ int main(int argc, char*argv[])
 		}
 
 
-		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
 			//olafPosition.x += 5 * dt;
 			currentOrientation.x += radians(5.0f);
 		}
-		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
 			//olafPosition.x -= 5 * dt;
 			currentOrientation.x -= radians(5.0f);
 		}
-		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-			olafPosition.z += 5 * dt;
+		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+			//olafPosition.z += 5 * dt;
+			currentOrientation.y += radians(5.0f);
 		}
-		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-			olafPosition.z -= 5 * dt;
+		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+			//olafPosition.z -= 5 * dt;
+			currentOrientation.y -= radians(5.0f);
 		}
 
 
