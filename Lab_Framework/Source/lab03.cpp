@@ -116,7 +116,10 @@ int main(int argc, char*argv[])
 	vec2 currentOrientation(0.0f, 0.0f);
 
 	mat4 groupMatrix = mat4(1.0f);
+	mat4 bodyMatrix = mat4(1.0f);
+	mat4 scaleMatrix = mat4(1.0f);
 	vec3 currentRotation(0.0f, 0.0f, 0.0f);
+	vec3 currentScale(1.0f, 1.0f, 1.0f);
 
 	float spinningAngle = 0.0f;
 	// Entering Game Loop
@@ -152,7 +155,9 @@ int main(int argc, char*argv[])
 		orientationMatrix = rotate(rotate(mat4(1.0f), currentOrientation.x, vec3(1.0f, 0.0f, 0.0f)), currentOrientation.y, vec3(0.0f, 1.0f, 0.0f));
 		glUniformMatrix4fv(orientationMatrixLocation, 1, GL_FALSE, &orientationMatrix[0][0]);
 
-		groupMatrix = translate(mat4(1.0f), olafPosition);
+		bodyMatrix = rotate(model, currentRotation.y, vec3(0.0f, 1.0f, 0.0f));
+		
+		groupMatrix = translate(model, vec3(random1, 0.0f, random2)) *  translate(model, olafPosition) * scale(model, currentScale);
 
 		// Gizmo
 		// X-axis
@@ -173,17 +178,17 @@ int main(int argc, char*argv[])
 
 		spinningAngle += 180.0f *dt;
 		// Draw cube-bottom
-		olafWorldMatrix = groupMatrix * translate(model, vec3(random1, 1.0f, random2 - 5.0f)) * scale(model, vec3(2.0f, 2.0f, 2.0f));
+		olafWorldMatrix = groupMatrix * translate(model, vec3(0.0f, 1.0f, 0.0f)) * bodyMatrix * scale(model, vec3(2.0f, 2.0f, 2.0f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Draw cube-Middle
-		olafWorldMatrix = groupMatrix * translate(model, vec3(random1, 2.5f, random2 - 5.0f)) * scale(model, vec3(1.2f, 1.2f, 1.2f));
+		olafWorldMatrix = groupMatrix * translate(model, vec3(0.0f, 2.5f, 0.0f)) * bodyMatrix * scale(model, vec3(1.2f, 1.2f, 1.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Draw cube-Top
-		olafWorldMatrix = groupMatrix * translate(model, vec3(random1, 3.8f, random2 - 5.0f)) * scale(model, vec3(1.5f, 1.5f, 1.5f));
+		olafWorldMatrix = groupMatrix * translate(model, vec3(0.0f, 3.8f, 0.0f)) * bodyMatrix * scale(model, vec3(1.5f, 1.5f, 1.5f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -191,24 +196,24 @@ int main(int argc, char*argv[])
 
 		//rotate(mat4(1.0f), currentRotation.y, vec3(0.0f, 1.0f, 0.0f))
 		// Draw arm-left
-		olafWorldMatrix = groupMatrix * translate(model, vec3(random1 - 1.2f, 2.2f, random2 - 5.0f)) * rotate(model, radians(45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(2.0f, 0.2f, 0.2f));
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f - 1.2f, 2.2f, 0.0f)) * rotate(model, radians(45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(2.0f, 0.2f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// Draw arm-right
-		olafWorldMatrix = groupMatrix * translate(model, vec3(random1 + 1.2f, 2.2f, random2 - 5.0f)) * rotate(model, radians(-45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(2.0f, 0.2f, 0.2f));
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f + 1.2f, 2.2f, 0.0f)) * rotate(model, radians(-45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(2.0f, 0.2f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// Hat1
-		olafWorldMatrix = groupMatrix * translate(model, vec3(random1, 4.5f, random2 - 5.0f)) * scale(model, vec3(2.0f, 0.5f, 2.0f));
+		olafWorldMatrix = groupMatrix * translate(model, vec3(0.0f, 4.5f, 0.0f)) * bodyMatrix * scale(model, vec3(2.0f, 0.5f, 2.0f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Hat2
-		olafWorldMatrix = groupMatrix * translate(model, vec3(random1, 5.0f, random2 - 5.0f)) * scale(model, vec3(0.8f, 0.5f, 0.8f));
+		olafWorldMatrix = groupMatrix * translate(model, vec3(0.0f, 5.0f, 0.0f)) * bodyMatrix * scale(model, vec3(0.8f, 0.5f, 0.8f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -297,23 +302,52 @@ int main(int argc, char*argv[])
 		{
 			//cameraPosition -= cameraSideVector * currentCameraSpeed * dt;
 			//currentRotation.y += radians(2.0f);
+			olafPosition.x += 5 * dt;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) // move camera to the right
 		{
 			//cameraPosition += cameraSideVector * currentCameraSpeed * dt;
 			//currentRotation.y -= radians(2.0f);
+			olafPosition.x -= 5 * dt;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) // move camera up
 		{
 			//cameraPosition -= cameraLookAt * currentCameraSpeed * dt;
+			olafPosition.z -= 5 * dt;
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) // move camera down
 		{
-			cameraPosition += cameraLookAt * currentCameraSpeed * dt;
+			//cameraPosition += cameraLookAt * currentCameraSpeed * dt;
+			olafPosition.z += 5 * dt;
 		}
+
+		if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) // move camera to the left
+		{
+			currentRotation.y += radians(2.0f);
+		}
+		if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) // move camera to the left
+		{
+			currentRotation.y -= radians(2.0f);
+		}
+		if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) // move camera to the left
+		{
+			currentScale.x += 0.1f;
+			currentScale.y += 0.1f;
+			currentScale.z += 0.1f;
+		}
+		if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS) // move camera to the left
+		{
+			currentScale.x -= 0.1f;
+			currentScale.y -= 0.1f;
+			currentScale.z -= 0.1f;
+		}
+
+
+
+
 
 
 		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
