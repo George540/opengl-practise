@@ -93,6 +93,8 @@ int main(int argc, char*argv[])
 	// For frame time
 	float lastFrameTime = glfwGetTime();
 	int lastMouseLeftState = GLFW_RELEASE;
+	int lastMouseRightState = GLFW_RELEASE;
+	int lastMouseMiddleState = GLFW_RELEASE;
 	double lastMousePosX, lastMousePosY;
 	glfwGetCursorPos(window, &lastMousePosX, &lastMousePosY);
 
@@ -289,20 +291,23 @@ int main(int argc, char*argv[])
 			glfwSetWindowShouldClose(window, true);
 
 
-		// Fast Camera Movement
-		bool fastCam = glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS;
-		float currentCameraSpeed = (fastCam) ? cameraFastSpeed : cameraSpeed;
-
-
 		// @TODO 4 - Calculate mouse motion dx and dy
 		//         - Update camera horizontal and vertical angle
 
 
 		double mousePosX, mousePosY;
 		glfwGetCursorPos(window, &mousePosX, &mousePosY);
+		
 
-		double dx = mousePosX - lastMousePosX;
-		double dy = mousePosY - lastMousePosY;
+		double dx = 0;
+		double dy = 0;
+		if (lastMouseRightState == GLFW_RELEASE && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
+			dx = mousePosX - lastMousePosX;
+		}
+		if (lastMouseMiddleState == GLFW_RELEASE && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) {
+			dy = mousePosY - lastMousePosY;
+		}
+		
 
 		lastMousePosX = mousePosX;
 		lastMousePosY = mousePosY;
