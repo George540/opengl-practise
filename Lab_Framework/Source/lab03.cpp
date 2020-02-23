@@ -38,7 +38,15 @@ int createVertexArrayObject2();
 
 bool initContext();
 
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+
 GLFWwindow * window = NULL;
+
+const float windowWidth = 768;
+const float windowLength = 1024;
+bool firstMouse = true;
+float fov = 70.0f;
+
 
 int main(int argc, char*argv[])
 {
@@ -46,6 +54,10 @@ int main(int argc, char*argv[])
 
 	// Black background
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+
+	glfwMakeContextCurrent(window);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 
 	// Compile and link shaders here ...
 	int shaderProgram = compileAndLinkShaders();
@@ -64,15 +76,9 @@ int main(int argc, char*argv[])
 	float cameraFastSpeed = 7 * cameraSpeed;
 	float cameraHorizontalAngle = 90.0f;
 	float cameraVerticalAngle = 0.0f;
-	bool  cameraFirstPerson = true; // press 1 or 2 to toggle this variable
 
-									// Set projection matrix for shader, this won't change
-	mat4 projectionMatrix = glm::perspective(70.0f,            // field of view in degrees
-		800.0f / 600.0f,  // aspect ratio
-		0.01f, 100.0f);   // near and far (near > 0)
 
-	GLuint projectionMatrixLocation = glGetUniformLocation(shaderProgram, "projectionMatrix");
-	glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
+	
 
 	GLuint colorLocation = glGetUniformLocation(shaderProgram, "objectColor");
 
@@ -86,7 +92,7 @@ int main(int argc, char*argv[])
 
 
 
-	// Define and upload geometry to the GPU here ...
+	// Define and upload geometry to the GPU here
 	int vao = createVertexArrayObject();
 	int vao2 = createVertexArrayObject2();
 
@@ -101,8 +107,6 @@ int main(int argc, char*argv[])
 	// Other OpenGL states to set once before the Game Loop
 	// Enable Backface culling
 	glEnable(GL_CULL_FACE);
-
-	// @TODO 1 - Enable Depth Test
 	glEnable(GL_DEPTH_TEST);
 
 	srand(time(NULL));
@@ -137,16 +141,11 @@ int main(int argc, char*argv[])
 		float dt = glfwGetTime() - lastFrameTime;
 		lastFrameTime += dt;
 
-		// Each frame, reset color of each pixel to glClearColor
-
-		// @TODO 1 - Clear Depth Buffer Bit as well
-		// ...
 		glClear(GL_COLOR_BUFFER_BIT);
 
 
 		// Draw geometry
 		glBindVertexArray(vao);
-		//glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
 		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 			random1 = (rand() % 50) - 25;
@@ -158,7 +157,6 @@ int main(int argc, char*argv[])
 		glUniformMatrix4fv(orientationMatrixLocation, 1, GL_FALSE, &orientationMatrix[0][0]);
 
 		bodyMatrix = rotate(model, currentRotation.y, vec3(0.0f, 1.0f, 0.0f));
-		
 		groupMatrix = translate(model, vec3(random1, 0.0f, random2)) *  translate(model, olafPosition) * scale(model, currentScale);
 
 		// Gizmo
@@ -304,7 +302,7 @@ int main(int argc, char*argv[])
 		if (lastMouseRightState == GLFW_RELEASE && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
 			dx = mousePosX - lastMousePosX;
 		}
-		if (lastMouseMiddleState == GLFW_RELEASE && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS) {
+		if (lastMouseMiddleState == GLFW_RELEASE && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
 			dy = mousePosY - lastMousePosY;
 		}
 		
@@ -392,19 +390,15 @@ int main(int argc, char*argv[])
 
 
 		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-			//olafPosition.x += 5 * dt;
 			currentOrientation.x += radians(5.0f);
 		}
 		if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-			//olafPosition.x -= 5 * dt;
 			currentOrientation.x -= radians(5.0f);
 		}
 		if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-			//olafPosition.z += 5 * dt;
 			currentOrientation.y += radians(5.0f);
 		}
 		if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-			//olafPosition.z -= 5 * dt;
 			currentOrientation.y -= radians(5.0f);
 		}
 
@@ -430,15 +424,15 @@ int main(int argc, char*argv[])
 		}
 
 
+		// Set projection matrix for shader
+		mat4 projectionMatrix = glm::perspective(glm::radians(fov),            // field of view in degrees
+			800.0f / 600.0f,  // aspect ratio
+			0.01f, 100.0f);   // near and far (near > 0)
 
+		GLuint projectionMatrixLocation = glGetUniformLocation(shaderProgram, "projectionMatrix");
+		glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, &projectionMatrix[0][0]);
 
-
-		// TODO 6
-		// Set the view matrix for first and third person cameras
-		// - In first person, camera lookat is set like below
-		// - In third person, camera position is on a sphere looking towards center
 		mat4 viewMatrix = lookAt(cameraPosition, cameraPosition + cameraLookAt, cameraUp);
-
 		GLuint viewMatrixLocation = glGetUniformLocation(shaderProgram, "viewMatrix");
 		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &viewMatrix[0][0]);
 
@@ -737,7 +731,7 @@ bool initContext() {     // Initialize GLFW and OpenGL version
 #endif
 
 	// Create Window and rendering context using GLFW, resolution is 1024, 768
-	window = glfwCreateWindow(1024, 768, "Comp371 - Assignment 1", NULL, NULL);
+	window = glfwCreateWindow(windowLength, windowWidth, "Comp371 - Assignment 1", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cerr << "Failed to create GLFW window" << std::endl;
@@ -745,9 +739,7 @@ bool initContext() {     // Initialize GLFW and OpenGL version
 		return false;
 	}
 	glfwMakeContextCurrent(window);
-
-	// @TODO 3 - Disable mouse cursor
-	// ...
+	glfwSetScrollCallback(window, scrollCallback);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// Initialize GLEW
@@ -758,4 +750,14 @@ bool initContext() {     // Initialize GLFW and OpenGL version
 		return false;
 	}
 	return true;
+}
+
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	if (fov >= 1.0f && fov <= 100.0f)
+		fov -= yoffset;
+	if (fov <= 1.0f)
+		fov = 1.0f;
+	if (fov >= 100.0f)
+		fov = 100.0f;
 }
