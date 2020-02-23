@@ -34,6 +34,8 @@ int compileAndLinkShaders();
 
 int createVertexArrayObject();
 
+int createVertexArrayObject2();
+
 bool initContext();
 
 GLFWwindow * window = NULL;
@@ -53,7 +55,7 @@ int main(int argc, char*argv[])
 
 
 	// Camera parameters for view transform
-	vec3 cameraPosition(0.6f, 3.0f, 20.0f);
+	vec3 cameraPosition(0.0f, 5.0f, 20.0f);
 	vec3 cameraLookAt(0.0f, 0.0f, -1.0f);
 	vec3 cameraUp(0.0f, 1.0f, 0.0f);
 
@@ -86,6 +88,7 @@ int main(int argc, char*argv[])
 
 	// Define and upload geometry to the GPU here ...
 	int vao = createVertexArrayObject();
+	int vao2 = createVertexArrayObject2();
 
 	// For frame time
 	float lastFrameTime = glfwGetTime();
@@ -127,9 +130,6 @@ int main(int argc, char*argv[])
 	{
 		// Add the GL_DEPTH_BUFFER_BIT to glClear – TODO 1
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// Each frame, reset color of each pixel to glClearColor
-		//glClear(GL_COLOR_BUFFER_BIT);
 
 		// Frame time calculation
 		float dt = glfwGetTime() - lastFrameTime;
@@ -192,21 +192,16 @@ int main(int argc, char*argv[])
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-
-
-		//rotate(mat4(1.0f), currentRotation.y, vec3(0.0f, 1.0f, 0.0f))
 		// Draw arm-left
 		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f - 1.2f, 2.2f, 0.0f)) * rotate(model, radians(45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(2.0f, 0.2f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
-		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.90, 0.60, 0.40)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-
 		// Draw arm-right
 		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f + 1.2f, 2.2f, 0.0f)) * rotate(model, radians(-45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(2.0f, 0.2f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
-		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.90, 0.60, 0.40)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-
 		// Hat1
 		olafWorldMatrix = groupMatrix * translate(model, vec3(0.0f, 4.5f, 0.0f)) * bodyMatrix * scale(model, vec3(2.0f, 0.5f, 2.0f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
@@ -217,6 +212,33 @@ int main(int argc, char*argv[])
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
+		// Eye-right
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.35f, 4.0f, 0.7f)) * scale(model, vec3(0.2f, 0.2f, 0.2f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		// Eye-left
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(-0.35f, 4.0f, 0.7f)) * scale(model, vec3(0.2f, 0.2f, 0.2f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		// Button1
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f, 2.8f, 0.6f)) * scale(model, vec3(0.2f, 0.2f, 0.2f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		// Button2
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f, 2.5f, 0.6f)) * scale(model, vec3(0.2f, 0.2f, 0.2f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		// Button3
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f, 2.2f, 0.6f)) * scale(model, vec3(0.2f, 0.2f, 0.2f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
 
 
 
@@ -237,6 +259,20 @@ int main(int argc, char*argv[])
 			glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 0.0)));
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
+
+
+		glBindVertexArray(vao2);
+
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f, 3.7f, 0.5f)) * rotate(model, radians(90.0f), vec3(1.0f, 0.0f, 0.0f)) * scale(model, vec3(0.3f, 1.0f, 0.3f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0f, 0.65, 0.0f)));
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+
+
+
+
 
 
 		// @TODO 3 - Update and draw projectiles
@@ -401,15 +437,6 @@ int main(int argc, char*argv[])
 		GLuint viewMatrixLocation = glGetUniformLocation(shaderProgram, "viewMatrix");
 		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, &viewMatrix[0][0]);
 
-
-		// @TODO 2 - Shoot Projectiles
-		//
-		// shoot projectiles on mouse left click
-		// To detect onPress events, we need to check the last state and the current state to detect the state change
-		// Otherwise, you would shoot many projectiles on each mouse press
-		// ...
-
-
 	}
 
 
@@ -562,6 +589,81 @@ int createVertexArrayObject()
 		vec3(-0.5f, 0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
 		vec3(-0.5f, 0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
 	};
+	// grid model
+	GLuint indexArray[] = {
+		0, 1, 2,
+		0, 2, 3
+	};
+
+
+
+
+
+	// Create a vertex array
+	GLuint vertexArrayObject;
+	glGenVertexArrays(1, &vertexArrayObject);
+	glBindVertexArray(vertexArrayObject);
+
+
+	// Upload Vertex Buffer to the GPU, keep a reference to it (vertexBufferObject)
+	GLuint vertexBufferObject;
+	glGenBuffers(1, &vertexBufferObject);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexArray), vertexArray, GL_STATIC_DRAW);
+	/*
+	GLuint elsementBufferObject;
+	glGenBuffers(1, &elementBufferObject);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexArray), vertexArray, GL_STATIC_DRAW);
+	*/
+
+	glVertexAttribPointer(0,                   // attribute 0 matches aPos in Vertex Shader
+		3,                   // size
+		GL_FLOAT,            // type
+		GL_FALSE,            // normalized?
+		2 * sizeof(vec3), // stride - each vertex contain 2 vec3 (position, color)
+		(void*)0             // array buffer offset
+	);
+	glEnableVertexAttribArray(0);
+
+
+	glVertexAttribPointer(1,                            // attribute 1 matches aColor in Vertex Shader
+		3,
+		GL_FLOAT,
+		GL_FALSE,
+		2 * sizeof(vec3),
+		(void*)sizeof(vec3)      // color is offseted a vec3 (comes after position)
+	);
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
+	glBindVertexArray(0);
+
+	return vertexArrayObject;
+}
+
+int createVertexArrayObject2()
+{
+	// Cube model
+
+	vec3 vertexArray[] = {  // position,                            color
+		vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f),
+		vec3(-1.0f, -1.0f, 1.0f), vec3(0.0f, 0.0f, 0.0f),
+		vec3(1.0f, -1.0f, 1.0f), vec3(0.0f, 0.0f, 0.0f),
+		
+		vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f),
+		vec3(1.0f, -1.0f, 1.0f), vec3(0.0f, 0.0f, 0.0f),
+		vec3(1.0f, -1.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f),
+
+		vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f),
+		vec3(1.0f, -1.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f),
+		vec3(-1.0f, -1.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f),
+		
+		vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f),
+		vec3(-1.0f, -1.0f, -1.0f), vec3(0.0f, 0.0f, 0.0f),
+		vec3(-1.0f, -1.0f, 1.0f), vec3(0.0f, 0.0f, 0.0f),
+		
+};
 	// grid model
 	GLuint indexArray[] = {
 		0, 1, 2,
