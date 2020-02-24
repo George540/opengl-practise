@@ -116,7 +116,7 @@
     <Image Include="..\Assets\Textures\Particle.png" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Source\lab03.cpp" />
+    <ClCompile Include="..\Source\OpenGLA1.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

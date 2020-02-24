@@ -63,7 +63,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Source\lab03.cpp">
+    <ClCompile Include="..\Source\OpenGLA1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

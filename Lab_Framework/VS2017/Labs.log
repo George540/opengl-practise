@@ -1,11 +1,11 @@
-﻿  lab03.cpp
-c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(100): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(112): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(141): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(151): warning C4244: '=': conversion from 'int' to 'GLfloat', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(152): warning C4244: '=': conversion from 'int' to 'GLfloat', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(315): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(316): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(734): warning C4244: 'argument': conversion from 'const float' to 'int', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\lab03.cpp(758): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+﻿  OpenGLA1.cpp
+c:\users\g\documents\github\opengl-practise\lab_framework\source\opengla1.cpp(93): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\opengla1.cpp(106): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\opengla1.cpp(141): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\opengla1.cpp(148): warning C4244: '=': conversion from 'int' to 'GLfloat', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\opengla1.cpp(149): warning C4244: '=': conversion from 'int' to 'GLfloat', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\opengla1.cpp(341): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\opengla1.cpp(342): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\opengla1.cpp(757): warning C4244: 'argument': conversion from 'const float' to 'int', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\opengla1.cpp(782): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
   Labs.vcxproj -> C:\Users\G\Documents\GitHub\opengl-practise\Lab_Framework\VS2017\/../Bin/Labs-Debug.exe
