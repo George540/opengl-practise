@@ -11,6 +11,9 @@
 #define GLEW_STATIC 1   // This allows linking with Static Library on Windows, without DLL
 #include <GL/glew.h>    // Include GLEW - OpenGL Extension Wrangler
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 #include <GLFW/glfw3.h> // cross-platform interface for creating a graphical context,
 // initializing OpenGL and binding inputs
 
@@ -28,15 +31,25 @@ using namespace std;
 
 const char* getVertexShaderSource();
 
+const char* getTexturedVertexShaderSource();
+
 const char* getFragmentShaderSource();
 
+const char* getTexturedFragmentShaderSource();
+
 int compileAndLinkShaders();
+
+int compileAndLinkTexturedShaders();
 
 int createVertexArrayObject();
 
 int createVertexArrayObject2();
 
 int createVertexArrayObject3();
+
+int createVertexArrayObject4();
+
+GLuint loadTexture(const char* filename);
 
 bool initContext();
 
@@ -69,6 +82,18 @@ int main(int argc, char*argv[])
 {
 	if (!initContext()) return -1;
 
+	// Load Textures
+	GLuint snowTextureID = loadTexture("C:/Users/G/Documents/GitHub/opengl-practise/Lab_Framework/Source/snow.jpg");
+	GLuint snow2TextureID = loadTexture("C:/Users/G/Documents/GitHub/opengl-practise/Lab_Framework/Source/snow2.jpg");
+	GLuint redTextureID = loadTexture("C:/Users/G/Documents/GitHub/opengl-practise/Lab_Framework/Source/red.jpg");
+	GLuint greenTextureID = loadTexture("C:/Users/G/Documents/GitHub/opengl-practise/Lab_Framework/Source/green.jpg");
+	GLuint blueTextureID = loadTexture("C:/Users/G/Documents/GitHub/opengl-practise/Lab_Framework/Source/blue.jpg");
+	GLuint clothTextureID = loadTexture("C:/Users/G/Documents/GitHub/opengl-practise/Lab_Framework/Source/cloth.jpg");
+	GLuint blackTextureID = loadTexture("C:/Users/G/Documents/GitHub/opengl-practise/Lab_Framework/Source/black.jpg");
+	GLuint wood1TextureID = loadTexture("C:/Users/G/Documents/GitHub/opengl-practise/Lab_Framework/Source/wood1.png");\
+	GLuint wood2TextureID = loadTexture("C:/Users/G/Documents/GitHub/opengl-practise/Lab_Framework/Source/wood2.jpg");
+	GLuint carrotTextureID = loadTexture("C:/Users/G/Documents/GitHub/opengl-practise/Lab_Framework/Source/carrot.jpg");
+
 	// Background Color
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 
@@ -78,8 +103,6 @@ int main(int argc, char*argv[])
 
 	// Compile and link shaders here ...
 	int shaderProgram = compileAndLinkShaders();
-
-	// We can set the shader once, since we have only one
 	glUseProgram(shaderProgram);
 
 
@@ -106,6 +129,7 @@ int main(int argc, char*argv[])
 	int vao = createVertexArrayObject();
 	int vao2 = createVertexArrayObject2();
 	int vao3 = createVertexArrayObject3();
+	int vao4 = createVertexArrayObject4();
 
 	// For frame time
 	float lastFrameTime = glfwGetTime();
@@ -117,9 +141,7 @@ int main(int argc, char*argv[])
 
 	// Other OpenGL states to set once before the Game Loop
 	// Enable Backface culling
-	glEnable(GL_CULL_FACE);
-	// Hidden Surface Removal
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_CULL_FACE);
 
 	srand(time(NULL));
 	GLfloat random1 = 0.0f;
@@ -152,14 +174,14 @@ int main(int argc, char*argv[])
 	// Entering Game Loop
 	while (!glfwWindowShouldClose(window))
 	{
+		
 		// Add the GL_DEPTH_BUFFER_BIT to glClear – TODO 1
+		glEnable(GL_DEPTH_TEST);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Frame time calculation
 		float dt = glfwGetTime() - lastFrameTime;
 		lastFrameTime += dt;
-
-		glClear(GL_COLOR_BUFFER_BIT);
 
 		// generate random coordinates for olaf
 		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
@@ -179,99 +201,89 @@ int main(int argc, char*argv[])
 
 		// GIZMO
 		// X-axis
+		glBindTexture(GL_TEXTURE_2D, redTextureID);
 		gizmoWorldMatrix = translate(model, vec3(2.5f, 0.0f, 0.0f)) * scale(model, vec3(5.0f, 0.1f, 0.1f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &gizmoWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Y-axis
+		glBindTexture(GL_TEXTURE_2D, greenTextureID);
 		gizmoWorldMatrix = translate(model, vec3(0.0f, 2.5f, 0.0f)) * scale(model, vec3(0.1f, 5.0f, 0.1f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &gizmoWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 1.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Z-axis
+		glBindTexture(GL_TEXTURE_2D, blueTextureID);
 		gizmoWorldMatrix = translate(model, vec3(0.0f, 0.0f, 2.5f)) * scale(model, vec3(0.1f, 0.1f, 5.0f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &gizmoWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 1.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// Draw arm-left
+		glBindTexture(GL_TEXTURE_2D, wood2TextureID);
 		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f - 1.2f, 2.2f, 0.0f)) * rotate(model, radians(45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(2.0f, 0.2f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.90, 0.60, 0.40)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Draw arm-right
+		glBindTexture(GL_TEXTURE_2D, wood2TextureID);
 		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f + 1.2f, 2.2f, 0.0f)) * rotate(model, radians(-45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(2.0f, 0.2f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.90, 0.60, 0.40)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Hat1
+		glBindTexture(GL_TEXTURE_2D, clothTextureID);
 		olafWorldMatrix = groupMatrix * translate(model, vec3(0.0f, 4.5f, 0.0f)) * bodyMatrix * scale(model, vec3(2.0f, 0.5f, 2.0f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Hat2
+		glBindTexture(GL_TEXTURE_2D, clothTextureID);
 		olafWorldMatrix = groupMatrix * translate(model, vec3(0.0f, 5.0f, 0.0f)) * bodyMatrix * scale(model, vec3(0.8f, 0.5f, 0.8f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
-		// Eye-right
-		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.35f, 4.0f, 0.7f)) * scale(model, vec3(0.2f, 0.2f, 0.2f));
-		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
-		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		// Eye-left
-		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(-0.35f, 4.0f, 0.7f)) * scale(model, vec3(0.2f, 0.2f, 0.2f));
-		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
-		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Mouth1
-		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f, 3.4f, 0.7f)) * scale(model, vec3(0.2f, 0.1f, 0.2f));
+		glBindTexture(GL_TEXTURE_2D, clothTextureID);
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f, 3.4f, 0.75f)) * scale(model, vec3(0.2f, 0.1f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Mouth2
-		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.15f, 3.45f, 0.7f)) * rotate(model, radians(45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(0.2f, 0.1f, 0.2f));
+		glBindTexture(GL_TEXTURE_2D, clothTextureID);
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.15f, 3.45f, 0.75f)) * rotate(model, radians(45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(0.2f, 0.1f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Mouth3
-		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(-0.15f, 3.45f, 0.7f)) * rotate(model, radians(-45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(0.2f, 0.1f, 0.2f));
+		glBindTexture(GL_TEXTURE_2D, clothTextureID);
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(-0.15f, 3.45f, 0.75f)) * rotate(model, radians(-45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(0.2f, 0.1f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		// Button1
-		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f, 2.8f, 0.6f)) * scale(model, vec3(0.2f, 0.2f, 0.2f));
-		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
-		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		// Button2
-		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f, 2.5f, 0.6f)) * scale(model, vec3(0.2f, 0.2f, 0.2f));
-		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
-		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		// Button3
-		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f, 2.2f, 0.6f)) * scale(model, vec3(0.2f, 0.2f, 0.2f));
-		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
-		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		
 
 		// Broom Base
+		glBindTexture(GL_TEXTURE_2D, wood1TextureID);
 		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(2.0f, 1.8f, 0.1f)) * rotate(model, radians(-30.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(0.2f, 4.0f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.7, 0.2, 0.2)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Broom Hold
+		glBindTexture(GL_TEXTURE_2D, wood1TextureID);
 		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(2.9f, 3.3f, 0.1f)) * rotate(model, radians(-30.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(1.3f, 0.3f, 0.3f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.7, 0.2, 0.2)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Broom Hair
+		glBindTexture(GL_TEXTURE_2D, clothTextureID);
 		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(2.95f, 3.4f, 0.1f)) * rotate(model, radians(-30.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(1.2f, 0.5f, 0.25f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		/*
 		//Draw grid
 		for (int i = 0; i <= 100; ++i)
 		{
@@ -285,50 +297,94 @@ int main(int argc, char*argv[])
 			glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 0.0)));
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
+		*/
 
 		// Switch to Pyramid
 		glBindVertexArray(vao2);
 
 		// NOSE
-		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f, 3.7f, 0.5f)) * rotate(model, radians(90.0f), vec3(1.0f, 0.0f, 0.0f)) * scale(model, vec3(0.4f, 1.0f, 0.4f));
+		glBindTexture(GL_TEXTURE_2D, carrotTextureID);
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f, 3.75f, 0.5f)) * rotate(model, radians(90.0f), vec3(1.0f, 0.0f, 0.0f)) * scale(model, vec3(0.4f, 1.0f, 0.4f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0f, 0.65, 0.0f)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		// GIZMO ARROWS (R,G,B)
+		glBindTexture(GL_TEXTURE_2D, redTextureID);
 		gizmoWorldMatrix = translate(model, vec3(5.0f, 0.0f, 0.0f)) * rotate(model, radians(-90.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(0.2f, 0.5f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &gizmoWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 0.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		glBindTexture(GL_TEXTURE_2D, greenTextureID);
 		gizmoWorldMatrix = translate(model, vec3(0.0f, 5.0f, 0.0f)) * scale(model, vec3(0.2f, 0.5f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &gizmoWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 1.0, 0.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
+		glBindTexture(GL_TEXTURE_2D, blueTextureID);
 		gizmoWorldMatrix = translate(model, vec3(0.0f, 0.0f, 5.0f)) * rotate(model, radians(90.0f), vec3(1.0f, 0.0f, 0.0f)) * scale(model, vec3(0.2f, 0.5f, 0.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &gizmoWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 1.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
 		glBindVertexArray(vao3);
-		// Draw cube-bottom
+		// Draw bottom
+		glBindTexture(GL_TEXTURE_2D, snow2TextureID);
 		olafWorldMatrix = groupMatrix * translate(model, vec3(0.0f, 1.0f, 0.0f)) * bodyMatrix * scale(model, vec3(1.2f, 1.2f, 1.2f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, numOfVertices);
-		// Draw cube-Middle
+		// Draw middle
+		glBindTexture(GL_TEXTURE_2D, snow2TextureID);
 		olafWorldMatrix = groupMatrix * translate(model, vec3(0.0f, 2.5f, 0.0f)) * bodyMatrix * scale(model, vec3(0.8f, 0.8f, 0.8f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, numOfVertices);
-		// Draw cube-Top
+		// Draw top
+		glBindTexture(GL_TEXTURE_2D, snow2TextureID);
 		olafWorldMatrix = groupMatrix * translate(model, vec3(0.0f, 3.8f, 0.0f)) * bodyMatrix * scale(model, vec3(0.9f, 0.9f, 0.9f));
 		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, numOfVertices);
 
+		// Button1
+		glBindTexture(GL_TEXTURE_2D, blackTextureID);
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f, 2.8f, 0.7f)) * scale(model, vec3(0.1f, 0.1f, 0.1f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, numOfVertices);
+		// Button2
+		glBindTexture(GL_TEXTURE_2D, blackTextureID);
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f, 2.5f, 0.8f)) * scale(model, vec3(0.1f, 0.1f, 0.1f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, numOfVertices);
+		// Button3
+		glBindTexture(GL_TEXTURE_2D, blackTextureID);
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f, 2.2f, 0.7)) * scale(model, vec3(0.1f, 0.1f, 0.1f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, numOfVertices);
+		// Eye-right
+		glBindTexture(GL_TEXTURE_2D, blackTextureID);
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.35f, 4.0f, 0.8f)) * scale(model, vec3(0.1f, 0.1f, 0.1f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, numOfVertices);
+		// Eye-left
+		glBindTexture(GL_TEXTURE_2D, blackTextureID);
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(-0.35f, 4.0f, 0.8f)) * scale(model, vec3(0.1f, 0.1f, 0.1f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &olafWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, numOfVertices);
 
+		glBindVertexArray(vao4);
+		glBindTexture(GL_TEXTURE_2D, snowTextureID);
+		gridWorldMatrix = rotate(model, radians(-90.0f), vec3(1.0f, 0.0f, 0.0f)) * scale(model, vec3(100.0f, 100.0f, 100.0f));
+		glUniformMatrix4fv(worldMatrixLocation, 1, GL_FALSE, &gridWorldMatrix[0][0]);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.5, 0.5, 0.5)));
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
 		// End Frame
@@ -495,6 +551,7 @@ const char* getVertexShaderSource()
 		"#version 330 core\n"
 		"layout (location = 0) in vec3 aPos;"
 		"layout (location = 1) in vec3 aColor;"
+		"layout (location = 2) in vec2 aTexCoord;"
 		""
 		"uniform mat4 worldMatrix;"
 		"uniform mat4 orientationMatrix = mat4(1.0);"
@@ -502,11 +559,14 @@ const char* getVertexShaderSource()
 		"uniform mat4 projectionMatrix = mat4(1.0);"
 		""
 		"out vec3 vertexColor;"
+		"out vec2 TexCoord;"
+		""
 		"void main()"
 		"{"
 		"   vertexColor = aColor;"
 		"   mat4 modelViewProjection = projectionMatrix * viewMatrix * orientationMatrix * worldMatrix;"
 		"   gl_Position = modelViewProjection * vec4(aPos.x, aPos.y, aPos.z, 1.0);"
+		"	TexCoord = aTexCoord;"
 		"}";
 }
 
@@ -515,11 +575,16 @@ const char* getFragmentShaderSource()
 	return
 		"#version 330 core\n"
 		"in vec3 vertexColor;"
+		"in vec2 TexCoord;"
 		"uniform vec3 objectColor;"
+		"uniform sampler2D textureSampler;"
+		""
 		"out vec4 FragColor;"
+		""
 		"void main()"
 		"{"
-		"   FragColor = vec4(objectColor.r, objectColor.g, objectColor.b, 1.0f);"
+		"	vec4 baseColor= vec4(objectColor.r, objectColor.g, objectColor.b, 1.0f);"
+		"   FragColor = texture(textureSampler, TexCoord);"
 		"}";
 }
 
@@ -580,61 +645,65 @@ int compileAndLinkShaders()
 
 int createVertexArrayObject()
 {
-	// Cube model
+	struct TexturedColoredVertex
+	{
+		TexturedColoredVertex(vec3 _position, vec3 _color, vec2 _uv)
+			: position(_position), color(_color), uv(_uv) {}
 
-	vec3 vertexArray[] = {  // position,                            color
-		vec3(-0.5f,-0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f), //left
-		vec3(-0.5f,-0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
-		vec3(-0.5f, 0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
-
-		vec3(-0.5f,-0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
-		vec3(-0.5f, 0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
-		vec3(-0.5f, 0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
-
-		vec3(0.5f, 0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f), // far
-		vec3(-0.5f,-0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
-		vec3(-0.5f, 0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
-
-		vec3(0.5f, 0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
-		vec3(0.5f,-0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
-		vec3(-0.5f,-0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
-
-		vec3(0.5f,-0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f), // bottom
-		vec3(-0.5f,-0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
-		vec3(0.5f,-0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
-
-		vec3(0.5f,-0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
-		vec3(-0.5f,-0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
-		vec3(-0.5f,-0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
-
-		vec3(-0.5f, 0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f), // near
-		vec3(-0.5f,-0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
-		vec3(0.5f,-0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
-
-		vec3(0.5f, 0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
-		vec3(-0.5f, 0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
-		vec3(0.5f,-0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
-
-		vec3(0.5f, 0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f), // right
-		vec3(0.5f,-0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
-		vec3(0.5f, 0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
-
-		vec3(0.5f,-0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
-		vec3(0.5f, 0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
-		vec3(0.5f,-0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
-
-		vec3(0.5f, 0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f), // top
-		vec3(0.5f, 0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
-		vec3(-0.5f, 0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
-
-		vec3(0.5f, 0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
-		vec3(-0.5f, 0.5f,-0.5f), vec3(1.0f, 1.0f, 1.0f),
-		vec3(-0.5f, 0.5f, 0.5f), vec3(1.0f, 1.0f, 1.0f),
+		vec3 position;
+		vec3 color;
+		vec2 uv;
 	};
-	// grid model
-	GLuint indexArray[] = {
-		0, 1, 2,
-		0, 2, 3
+
+	// Textured Cube model
+	const TexturedColoredVertex texturedCubeVertexArray[] = {  // position,                            color
+		TexturedColoredVertex(vec3(-0.5f,-0.5f,-0.5f), vec3(1.0f, 0.0f, 0.0f), vec2(0.0f, 0.0f)), //left - red
+		TexturedColoredVertex(vec3(-0.5f,-0.5f, 0.5f), vec3(1.0f, 0.0f, 0.0f), vec2(0.0f, 1.0f)),
+		TexturedColoredVertex(vec3(-0.5f, 0.5f, 0.5f), vec3(1.0f, 0.0f, 0.0f), vec2(1.0f, 1.0f)),
+
+		TexturedColoredVertex(vec3(-0.5f,-0.5f,-0.5f), vec3(1.0f, 0.0f, 0.0f), vec2(0.0f, 0.0f)),
+		TexturedColoredVertex(vec3(-0.5f, 0.5f, 0.5f), vec3(1.0f, 0.0f, 0.0f), vec2(1.0f, 1.0f)),
+		TexturedColoredVertex(vec3(-0.5f, 0.5f,-0.5f), vec3(1.0f, 0.0f, 0.0f), vec2(1.0f, 0.0f)),
+
+		TexturedColoredVertex(vec3(0.5f, 0.5f,-0.5f), vec3(0.0f, 0.0f, 1.0f), vec2(1.0f, 1.0f)), // far - blue
+		TexturedColoredVertex(vec3(-0.5f,-0.5f,-0.5f), vec3(0.0f, 0.0f, 1.0f), vec2(0.0f, 0.0f)),
+		TexturedColoredVertex(vec3(-0.5f, 0.5f,-0.5f), vec3(0.0f, 0.0f, 1.0f), vec2(0.0f, 1.0f)),
+
+		TexturedColoredVertex(vec3(0.5f, 0.5f,-0.5f), vec3(0.0f, 0.0f, 1.0f), vec2(1.0f, 1.0f)),
+		TexturedColoredVertex(vec3(0.5f,-0.5f,-0.5f), vec3(0.0f, 0.0f, 1.0f), vec2(1.0f, 0.0f)),
+		TexturedColoredVertex(vec3(-0.5f,-0.5f,-0.5f), vec3(0.0f, 0.0f, 1.0f), vec2(0.0f, 0.0f)),
+
+		TexturedColoredVertex(vec3(0.5f,-0.5f, 0.5f), vec3(0.0f, 1.0f, 1.0f), vec2(1.0f, 1.0f)), // bottom - turquoise
+		TexturedColoredVertex(vec3(-0.5f,-0.5f,-0.5f), vec3(0.0f, 1.0f, 1.0f), vec2(0.0f, 0.0f)),
+		TexturedColoredVertex(vec3(0.5f,-0.5f,-0.5f), vec3(0.0f, 1.0f, 1.0f), vec2(1.0f, 0.0f)),
+
+		TexturedColoredVertex(vec3(0.5f,-0.5f, 0.5f), vec3(0.0f, 1.0f, 1.0f), vec2(1.0f, 1.0f)),
+		TexturedColoredVertex(vec3(-0.5f,-0.5f, 0.5f), vec3(0.0f, 1.0f, 1.0f), vec2(0.0f, 1.0f)),
+		TexturedColoredVertex(vec3(-0.5f,-0.5f,-0.5f), vec3(0.0f, 1.0f, 1.0f), vec2(0.0f, 0.0f)),
+
+		TexturedColoredVertex(vec3(-0.5f, 0.5f, 0.5f), vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 1.0f)), // near - green
+		TexturedColoredVertex(vec3(-0.5f,-0.5f, 0.5f), vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 0.0f)),
+		TexturedColoredVertex(vec3(0.5f,-0.5f, 0.5f), vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 0.0f)),
+
+		TexturedColoredVertex(vec3(0.5f, 0.5f, 0.5f), vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 1.0f)),
+		TexturedColoredVertex(vec3(-0.5f, 0.5f, 0.5f), vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 1.0f)),
+		TexturedColoredVertex(vec3(0.5f,-0.5f, 0.5f), vec3(0.0f, 1.0f, 0.0f), vec2(1.0f, 0.0f)),
+
+		TexturedColoredVertex(vec3(0.5f, 0.5f, 0.5f), vec3(1.0f, 0.0f, 1.0f), vec2(1.0f, 1.0f)), // right - purple
+		TexturedColoredVertex(vec3(0.5f,-0.5f,-0.5f), vec3(1.0f, 0.0f, 1.0f), vec2(0.0f, 0.0f)),
+		TexturedColoredVertex(vec3(0.5f, 0.5f,-0.5f), vec3(1.0f, 0.0f, 1.0f), vec2(1.0f, 0.0f)),
+
+		TexturedColoredVertex(vec3(0.5f,-0.5f,-0.5f), vec3(1.0f, 0.0f, 1.0f), vec2(0.0f, 0.0f)),
+		TexturedColoredVertex(vec3(0.5f, 0.5f, 0.5f), vec3(1.0f, 0.0f, 1.0f), vec2(1.0f, 1.0f)),
+		TexturedColoredVertex(vec3(0.5f,-0.5f, 0.5f), vec3(1.0f, 0.0f, 1.0f), vec2(0.0f, 1.0f)),
+
+		TexturedColoredVertex(vec3(0.5f, 0.5f, 0.5f), vec3(1.0f, 1.0f, 0.0f), vec2(1.0f, 1.0f)), // top - yellow
+		TexturedColoredVertex(vec3(0.5f, 0.5f,-0.5f), vec3(1.0f, 1.0f, 0.0f), vec2(1.0f, 0.0f)),
+		TexturedColoredVertex(vec3(-0.5f, 0.5f,-0.5f), vec3(1.0f, 1.0f, 0.0f), vec2(0.0f, 0.0f)),
+
+		TexturedColoredVertex(vec3(0.5f, 0.5f, 0.5f), vec3(1.0f, 1.0f, 0.0f), vec2(1.0f, 1.0f)),
+		TexturedColoredVertex(vec3(-0.5f, 0.5f,-0.5f), vec3(1.0f, 1.0f, 0.0f), vec2(0.0f, 0.0f)),
+		TexturedColoredVertex(vec3(-0.5f, 0.5f, 0.5f), vec3(1.0f, 1.0f, 0.0f), vec2(0.0f, 1.0f))
 	};
 
 
@@ -651,19 +720,13 @@ int createVertexArrayObject()
 	GLuint vertexBufferObject;
 	glGenBuffers(1, &vertexBufferObject);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexArray), vertexArray, GL_STATIC_DRAW);
-	/*
-	GLuint elsementBufferObject;
-	glGenBuffers(1, &elementBufferObject);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexArray), vertexArray, GL_STATIC_DRAW);
-	*/
+	glBufferData(GL_ARRAY_BUFFER, sizeof(texturedCubeVertexArray), texturedCubeVertexArray, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0,                   // attribute 0 matches aPos in Vertex Shader
 		3,                   // size
 		GL_FLOAT,            // type
 		GL_FALSE,            // normalized?
-		2 * sizeof(vec3), // stride - each vertex contain 2 vec3 (position, color)
+		sizeof(TexturedColoredVertex), // stride - each vertex contain 2 vec3 (position, color)
 		(void*)0             // array buffer offset
 	);
 	glEnableVertexAttribArray(0);
@@ -673,13 +736,17 @@ int createVertexArrayObject()
 		3,
 		GL_FLOAT,
 		GL_FALSE,
-		2 * sizeof(vec3),
+		sizeof(TexturedColoredVertex),
 		(void*)sizeof(vec3)      // color is offseted a vec3 (comes after position)
 	);
 	glEnableVertexAttribArray(1);
 
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
-	glBindVertexArray(0);
+	// texture coord attribute
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedColoredVertex), (void*)(2 * sizeof(vec3)));
+	glEnableVertexAttribArray(2);
+
+	//glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
+	//glBindVertexArray(0);
 
 	return vertexArrayObject;
 }
@@ -752,6 +819,10 @@ int createVertexArrayObject2()
 		(void*)sizeof(vec3)      // color is offseted a vec3 (comes after position)
 	);
 	glEnableVertexAttribArray(1);
+
+	// texture coord attribute
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(vec3), (void*)(6 * sizeof(vec3)));
+	glEnableVertexAttribArray(2);
 
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
 	glBindVertexArray(0);
@@ -2076,6 +2147,87 @@ int createVertexArrayObject3() {
 	glBindVertexArray(0);
 
 	return vertexArrayObject;
+}
+
+int createVertexArrayObject4() {
+	float vertices[] = {
+		// positions          // colors           // texture coords
+		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
+		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+	};
+	unsigned int indices[] = {  // note that we start from 0!
+		0, 1, 3,  // first Triangle
+		1, 2, 3   // second Triangle
+	};
+	unsigned int VBO, VAO, EBO;
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	// position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	// color attribute
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
+	// texture coord attribute
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	return VAO;
+}
+
+GLuint loadTexture(const char *filename)
+{
+	// Step1 Create and bind textures
+	GLuint textureId = 0;
+	glGenTextures(1, &textureId);
+	assert(textureId != 0);
+
+
+	glBindTexture(GL_TEXTURE_2D, textureId);
+
+	// Step2 Set filter parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	// Step3 Load Textures with dimension data
+	int width, height, nrChannels;
+	unsigned char *data = stbi_load(filename, &width, &height, &nrChannels, 0);
+	if (!data)
+	{
+		std::cerr << "Error::Texture could not load texture file:" << filename << std::endl;
+		return 0;
+	}
+
+	// Step4 Upload the texture to the PU
+	GLenum format = 0;
+	if (nrChannels == 1)
+		format = GL_RED;
+	else if (nrChannels == 3)
+		format = GL_RGB;
+	else if (nrChannels == 4)
+		format = GL_RGBA;
+	glTexImage2D(GL_TEXTURE_2D, 0, format, width, height,
+		0, format, GL_UNSIGNED_BYTE, data);
+
+	// Step5 Free resources
+	stbi_image_free(data);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	return textureId;
 }
 
 bool initContext() {     // Initialize GLFW and OpenGL version

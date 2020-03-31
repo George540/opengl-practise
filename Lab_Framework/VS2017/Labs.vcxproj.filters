@@ -61,10 +61,18 @@
     <Image Include="..\Assets\Textures\Particle.png">
       <Filter>Resource Files\Textures</Filter>
     </Image>
+    <Image Include="..\Source\GroundSnowPitted003_COL_1K.jpg">
+      <Filter>Resource Files\Textures</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\OpenGLA1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Source\stb_image.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
