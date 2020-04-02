@@ -117,7 +117,7 @@
     <Image Include="..\Source\GroundSnowPitted003_COL_1K.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Source\OpenGLA1.cpp" />
+    <ClCompile Include="..\Source\Source Code\OpenGLA2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Source\stb_image.h" />

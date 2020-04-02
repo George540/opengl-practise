@@ -1,1 +1,12 @@
-﻿  Labs.vcxproj -> C:\Users\G\Documents\GitHub\opengl-practise\Lab_Framework\VS2017\/../Bin/Labs-Debug.exe
+﻿  OpenGLA2.cpp
+c:\users\g\documents\github\opengl-practise\lab_framework\source\source code\opengla2.cpp(162): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\source code\opengla2.cpp(173): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\source code\opengla2.cpp(204): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\source code\opengla2.cpp(209): warning C4244: '=': conversion from 'int' to 'GLfloat', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\source code\opengla2.cpp(210): warning C4244: '=': conversion from 'int' to 'GLfloat', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\source code\opengla2.cpp(408): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\source code\opengla2.cpp(409): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\source code\opengla2.cpp(182): warning C4101: 'lightWorldMatrix': unreferenced local variable
+c:\users\g\documents\github\opengl-practise\lab_framework\source\source code\opengla2.cpp(2291): warning C4244: 'argument': conversion from 'const float' to 'int', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\source code\opengla2.cpp(2316): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+  Labs.vcxproj -> C:\Users\G\Documents\GitHub\opengl-practise\Lab_Framework\VS2017\/../Bin/Labs-Debug.exe
