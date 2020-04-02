@@ -117,10 +117,11 @@
     <Image Include="..\Source\GroundSnowPitted003_COL_1K.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Source\Source Code\OpenGLA2.cpp" />
+    <ClInclude Include="..\Source\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Source\stb_image.h" />
+    <ClCompile Include="..\Source\Code\OpenGLA1.cpp" />
+    <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
