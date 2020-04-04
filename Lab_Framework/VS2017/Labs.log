@@ -19,14 +19,14 @@ c:\users\g\documents\github\opengl-practise\lab_framework\source\code\objloader.
   c:\program files (x86)\windows kits\10\include\10.0.16299.0\ucrt\stdio.h(2261): note: see declaration of 'sscanf'
 c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(17): warning C4067: unexpected tokens following preprocessor directive - expected a newline
 c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(18): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(165): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(176): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(208): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(213): warning C4244: '=': conversion from 'int' to 'GLfloat', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(214): warning C4244: '=': conversion from 'int' to 'GLfloat', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(472): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(473): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(186): warning C4101: 'lightWorldMatrix': unreferenced local variable
-c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(1151): warning C4244: 'argument': conversion from 'const float' to 'int', possible loss of data
-c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(1176): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(174): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(185): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(218): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(223): warning C4244: '=': conversion from 'int' to 'GLfloat', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(224): warning C4244: '=': conversion from 'int' to 'GLfloat', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(477): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(478): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(196): warning C4101: 'lightWorldMatrix': unreferenced local variable
+c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(1190): warning C4244: 'argument': conversion from 'const float' to 'int', possible loss of data
+c:\users\g\documents\github\opengl-practise\lab_framework\source\code\opengla1.cpp(1215): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
   Labs.vcxproj -> C:\Users\G\Documents\GitHub\opengl-practise\Lab_Framework\VS2017\/../Bin/Labs-Debug.exe

@@ -116,7 +116,7 @@ int main(int argc, char*argv[])
 	GLuint carrotTextureID = loadTexture("C:/Users/G/Documents/GitHub/opengl-practise/Lab_Framework/Source/carrot.jpg");
 
 	// Background Color
-	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+	glClearColor(0.2f, 0.2f, 0.5f, 1.0f);
 
 	glfwMakeContextCurrent(window);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -162,6 +162,8 @@ int main(int argc, char*argv[])
 	// Define and upload geometry to the GPU here
 	int cubeVAO = setupModelVBO("C:/Users/G/Documents/GitHub/opengl-practise/Lab_Framework/Source/Code/cube.obj", numOfVertices);
 	int pyramidVAO = setupModelVBO("C:/Users/G/Documents/GitHub/opengl-practise/Lab_Framework/Source/Code/pyramid.obj", numOfVertices);
+	int handVAO = setupModelVBO("C:/Users/G/Documents/GitHub/opengl-practise/Lab_Framework/Source/Code/hand.obj", numOfVertices);
+	int hatVAO = setupModelVBO("C:/Users/G/Documents/GitHub/opengl-practise/Lab_Framework/Source/Code/cap.obj", numOfVertices);
 	// sphere2.obj may take a lot of GPU power because it has over 200k vertices
 	// replace it with sphere.obj for faster rendermode
 	int scarfVAO = setupModelVBO("C:/Users/G/Documents/GitHub/opengl-practise/Lab_Framework/Source/Code/scarf.obj", numOfVertices);
@@ -267,34 +269,6 @@ int main(int argc, char*argv[])
 		glUniform3fv(lightLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		// Draw arm-left
-		glBindTexture(GL_TEXTURE_2D, wood2TextureID);
-		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f - 1.2f, 2.2f, 0.0f)) * rotate(model, radians(45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(2.0f, 0.2f, 0.2f));
-		setWorldMatrix(textureProgram, olafWorldMatrix);
-		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.90, 0.60, 0.40)));
-		glUniform3fv(lightLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		// Draw arm-right
-		glBindTexture(GL_TEXTURE_2D, wood2TextureID);
-		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f + 1.2f, 2.2f, 0.0f)) * rotate(model, radians(-45.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(2.0f, 0.2f, 0.2f));
-		setWorldMatrix(textureProgram, olafWorldMatrix);
-		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.90, 0.60, 0.40)));
-		glUniform3fv(lightLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		// Hat1
-		glBindTexture(GL_TEXTURE_2D, clothTextureID);
-		olafWorldMatrix = groupMatrix * translate(model, vec3(0.0f, 4.5f, 0.0f)) * bodyMatrix * scale(model, vec3(2.0f, 0.5f, 2.0f));
-		setWorldMatrix(textureProgram, olafWorldMatrix);
-		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		glUniform3fv(lightLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		// Hat2
-		glBindTexture(GL_TEXTURE_2D, clothTextureID);
-		olafWorldMatrix = groupMatrix * translate(model, vec3(0.0f, 5.0f, 0.0f)) * bodyMatrix * scale(model, vec3(0.8f, 0.5f, 0.8f));
-		setWorldMatrix(textureProgram, olafWorldMatrix);
-		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
-		glUniform3fv(lightLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
-		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Mouth1
 		glBindTexture(GL_TEXTURE_2D, clothTextureID);
 		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.0f, 3.4f, 0.75f)) * scale(model, vec3(0.2f, 0.1f, 0.2f));
@@ -321,21 +295,21 @@ int main(int argc, char*argv[])
 
 		// Broom Base
 		glBindTexture(GL_TEXTURE_2D, wood1TextureID);
-		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(2.0f, 1.8f, 0.1f)) * rotate(model, radians(-30.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(0.2f, 4.0f, 0.2f));
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(2.0f, 1.8f, 0.2f)) * rotate(model, radians(-30.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(0.2f, 4.0f, 0.2f));
 		setWorldMatrix(textureProgram, olafWorldMatrix);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.7, 0.2, 0.2)));
 		glUniform3fv(lightLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Broom Hold
 		glBindTexture(GL_TEXTURE_2D, wood1TextureID);
-		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(2.9f, 3.3f, 0.1f)) * rotate(model, radians(-30.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(1.3f, 0.3f, 0.3f));
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(2.9f, 3.3f, 0.2f)) * rotate(model, radians(-30.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(1.3f, 0.3f, 0.3f));
 		setWorldMatrix(textureProgram, olafWorldMatrix);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.7, 0.2, 0.2)));
 		glUniform3fv(lightLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		// Broom Hair
 		glBindTexture(GL_TEXTURE_2D, clothTextureID);
-		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(2.95f, 3.4f, 0.1f)) * rotate(model, radians(-30.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(1.2f, 0.5f, 0.25f));
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(2.95f, 3.4f, 0.2f)) * rotate(model, radians(-30.0f), vec3(0.0f, 0.0f, 1.0f)) * scale(model, vec3(1.2f, 0.5f, 0.25f));
 		setWorldMatrix(textureProgram, olafWorldMatrix);
 		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
 		glUniform3fv(lightLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
@@ -452,9 +426,30 @@ int main(int argc, char*argv[])
 		glUniform3fv(lightLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
 		glDrawArrays(GL_TRIANGLES, 0, numOfVertices);
 
+		glBindVertexArray(handVAO);
+		// Draw arm-left
+		glBindTexture(GL_TEXTURE_2D, wood2TextureID);
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(0.6, 2.8f, 0.0f)) * scale(model, vec3(0.4f, 0.4f, 0.4f));
+		setWorldMatrix(textureProgram, olafWorldMatrix);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.90, 0.60, 0.40)));
+		glUniform3fv(lightLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
+		glDrawArrays(GL_TRIANGLES, 0, numOfVertices);
+		// Draw arm-right
+		glBindTexture(GL_TEXTURE_2D, wood2TextureID);
+		olafWorldMatrix = groupMatrix * bodyMatrix * translate(model, vec3(-0.6, 2.8f, 0.0f)) * rotate(model, radians(180.0f), vec3(0.0f, 1.0f, 0.0f)) * scale(model, vec3(0.4f, 0.4f, 0.4f));
+		setWorldMatrix(textureProgram, olafWorldMatrix);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.90, 0.60, 0.40)));
+		glUniform3fv(lightLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
+		glDrawArrays(GL_TRIANGLES, 0, numOfVertices);
 
-		
-
+		// Hat
+		glBindVertexArray(hatVAO);
+		glBindTexture(GL_TEXTURE_2D, clothTextureID);
+		olafWorldMatrix = groupMatrix * translate(model, vec3(0.0f, 4.2f, 0.0f)) * bodyMatrix * scale(model, vec3(1.1f, 1.1f, 1.1f));
+		setWorldMatrix(textureProgram, olafWorldMatrix);
+		glUniform3fv(colorLocation, 1, glm::value_ptr(glm::vec3(0.0, 0.0, 0.0)));
+		glUniform3fv(lightLocation, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
+		glDrawArrays(GL_TRIANGLES, 0, numOfVertices);
 
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
