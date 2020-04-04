@@ -202,8 +202,10 @@ int main(int argc, char*argv[])
 
 	mat4 groupMatrix = mat4(1.0f); // matrix for group 
 	mat4 bodyMatrix = mat4(1.0f); // rotation matrix for Olaf
+	mat4 armMatrix = mat4(1.0f); // rotation of arms of Olaf
 	mat4 scaleMatrix = mat4(1.0f); // scale matrix for Olaf objects
 	vec3 currentRotation(0.0f, 0.0f, 0.0f); // current rotation for rotation matrix
+	vec3 currentRotationArms(0.0f, 0.0f, 0.0f); // arm movement
 	vec3 currentScale(1.0f, 1.0f, 1.0f); // currentScale applied to scale Matrix
 	
 	// Entering Game Loop
@@ -237,6 +239,7 @@ int main(int argc, char*argv[])
 
 		bodyMatrix = rotate(model, currentRotation.y, vec3(0.0f, 1.0f, 0.0f));
 		groupMatrix = translate(model, vec3(random1, 0.0f, random2)) *  translate(model, olafPosition) * scale(model, currentScale);
+		
 
 		// Light Source
 		glBindVertexArray(lightVAO);
